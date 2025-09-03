@@ -1,0 +1,8 @@
+[package]
+name = "ttk"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+cod = { version = "9.0.3", features = ["crossterm"] }
+linoleum = "3.0.1"
