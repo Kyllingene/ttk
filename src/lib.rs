@@ -9,10 +9,11 @@
 // TODO: consider a scope- and/or guard-based approach to automating nesting
 
 pub mod exit;
+pub mod from_fn;
 pub mod print;
 pub mod query;
 
 /// Imports all the sub-modules.
 pub mod prelude {
-    pub use crate::{exit, print, query};
+    pub use crate::{exit, from_fn, print, query};
 }

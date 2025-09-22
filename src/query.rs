@@ -1,19 +1,8 @@
 use std::{fmt, str::FromStr};
 
+use cod::read::KeyCode;
+use cod::{prelude::*, read::KeyModifiers};
 use linoleum::{EditResult, Editor};
-
-pub enum Query<T, E> {
-    Ok(T),
-    Cancel,
-    Quit,
-    Err(E),
-}
-
-pub enum FailedQuery<E> {
-    Cancel,
-    Quit,
-    Err(E),
-}
 
 pub fn line(level: usize, prompt: impl fmt::Display) -> Query<String, Never> {
     crate::print::prompt(level, prompt);
@@ -32,6 +21,283 @@ pub fn item<T: FromStr>(level: usize, prompt: impl fmt::Display) -> Query<T, T::
     line(level, prompt)
         .map_err(|e| match e {})
         .and_then(|s| T::from_str(&s).into())
+}
+
+pub fn one(
+    level: usize,
+    prompt: impl fmt::Display,
+    choices: &[impl fmt::Display],
+    default: impl Into<Option<usize>>,
+) -> Query<usize, Never> {
+    crate::print::prompt(level, prompt);
+    let raw = term::RawModeGuard::enter();
+
+    let mut current = default.into().unwrap_or(0);
+    let mut offset;
+
+    for (i, choice) in choices.iter().enumerate() {
+        if i == current {
+            println!(" > {choice}\r");
+        } else {
+            println!(" - {choice}\r");
+        }
+    }
+
+    goto::up((choices.len() - current) as u32);
+    goto::start();
+    goto::right(1);
+    cod::flush();
+
+    loop {
+        let Some(key) = read::key() else {
+            return Query::Cancel;
+        };
+        match key.code {
+            KeyCode::Esc => {
+                drop(raw);
+                goto::up(current as u32);
+                for _ in 0..choices.len() {
+                    clear::line();
+                    goto::down(1);
+                }
+                goto::up(choices.len() as u32);
+                goto::start();
+
+                return Query::Cancel;
+            }
+            KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => {
+                drop(raw);
+                goto::up(current as u32);
+                for _ in 0..choices.len() {
+                    clear::line();
+                    goto::down(1);
+                }
+                goto::up(choices.len() as u32);
+                goto::start();
+
+                return Query::Cancel;
+            }
+            KeyCode::Char('q') => {
+                drop(raw);
+                goto::up(current as u32);
+                for _ in 0..choices.len() {
+                    clear::line();
+                    goto::down(1);
+                }
+                goto::up(choices.len() as u32);
+                goto::start();
+
+                return Query::Quit;
+            }
+            KeyCode::Char('d') if key.modifiers.contains(KeyModifiers::CONTROL) => {
+                drop(raw);
+                goto::up(current as u32);
+                for _ in 0..choices.len() {
+                    clear::line();
+                    goto::down(1);
+                }
+                goto::up(choices.len() as u32);
+                goto::start();
+
+                return Query::Quit;
+            }
+
+            KeyCode::Up => offset = -1,
+            KeyCode::Down => offset = 1,
+
+            KeyCode::Enter | KeyCode::Char(' ') => {
+                drop(raw);
+                goto::up(current as u32);
+                for _ in 0..choices.len() {
+                    clear::line();
+                    goto::down(1);
+                }
+                goto::up(choices.len() as u32);
+                goto::start();
+                println!(" > {}", choices[current]);
+
+                return Query::Ok(current);
+            }
+
+            _ => continue,
+        }
+
+        goto::up(current as u32);
+        goto::start();
+
+        current = current.saturating_add_signed(offset);
+
+        for (i, choice) in choices.iter().enumerate() {
+            clear::line();
+            if i == current {
+                println!(" > {choice}\r");
+            } else {
+                println!(" - {choice}\r");
+            }
+        }
+
+        goto::up((choices.len() - current) as u32);
+        goto::right(1);
+        cod::flush();
+    }
+}
+
+pub fn many(
+    level: usize,
+    prompt: impl fmt::Display,
+    choices: &[impl fmt::Display],
+    default: &[usize],
+) -> Query<Vec<bool>, Never> {
+    crate::print::prompt(level, prompt);
+    let raw = term::RawModeGuard::enter();
+
+    let mut selected = vec![false; choices.len()];
+    for i in default {
+        selected[*i] = true;
+    }
+
+    let mut current = 0;
+    let mut offset = 0;
+
+    for (i, choice) in choices.iter().enumerate() {
+        if i == current {
+            print!(" > ");
+        } else {
+            print!("   ");
+        }
+
+        if selected[i] {
+            println!(" [+] {choice}\r");
+        } else {
+            println!(" [ ] {choice}\r");
+        }
+    }
+
+    goto::up((choices.len() - current) as u32);
+    goto::start();
+    goto::right(1);
+    cod::flush();
+
+    loop {
+        let Some(key) = read::key() else {
+            return Query::Cancel;
+        };
+        match key.code {
+            KeyCode::Esc => {
+                drop(raw);
+                goto::up(current as u32);
+                for _ in 0..choices.len() {
+                    clear::line();
+                    goto::down(1);
+                }
+                goto::up(choices.len() as u32);
+                goto::start();
+
+                return Query::Cancel;
+            }
+            KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => {
+                drop(raw);
+                goto::up(current as u32);
+                for _ in 0..choices.len() {
+                    clear::line();
+                    goto::down(1);
+                }
+                goto::up(choices.len() as u32);
+                goto::start();
+
+                return Query::Cancel;
+            }
+            KeyCode::Char('q') => {
+                drop(raw);
+                goto::up(current as u32);
+                for _ in 0..choices.len() {
+                    clear::line();
+                    goto::down(1);
+                }
+                goto::up(choices.len() as u32);
+                goto::start();
+
+                return Query::Quit;
+            }
+            KeyCode::Char('d') if key.modifiers.contains(KeyModifiers::CONTROL) => {
+                drop(raw);
+                goto::up(current as u32);
+                for _ in 0..choices.len() {
+                    clear::line();
+                    goto::down(1);
+                }
+                goto::up(choices.len() as u32);
+                goto::start();
+
+                return Query::Quit;
+            }
+
+            KeyCode::Up => offset = -1,
+            KeyCode::Down => offset = 1,
+
+            KeyCode::Char(' ') => selected[current] = !selected[current],
+
+            KeyCode::Enter => {
+                drop(raw);
+                goto::up(current as u32);
+                for _ in 0..choices.len() {
+                    clear::line();
+                    goto::down(1);
+                }
+                goto::up(choices.len() as u32);
+                goto::start();
+
+                for (i, &x) in selected.iter().enumerate() {
+                    if x {
+                        println!(" [+] {}", choices[i]);
+                    }
+                }
+
+                return Query::Ok(selected);
+            }
+
+            _ => continue,
+        }
+
+        goto::up(current as u32);
+        goto::start();
+
+        current = current.saturating_add_signed(offset);
+        offset = 0;
+
+        for (i, choice) in choices.iter().enumerate() {
+            clear::line();
+
+            if i == current {
+                print!(" > ");
+            } else {
+                print!("   ");
+            }
+
+            if selected[i] {
+                println!(" [+] {choice}\r");
+            } else {
+                println!(" [ ] {choice}\r");
+            }
+        }
+
+        goto::up((choices.len() - current) as u32);
+        goto::right(1);
+        cod::flush();
+    }
+}
+
+pub enum Query<T, E> {
+    Ok(T),
+    Cancel,
+    Quit,
+    Err(E),
+}
+
+pub enum FailedQuery<E> {
+    Cancel,
+    Quit,
+    Err(E),
 }
 
 impl<T, E: fmt::Display> Query<T, E> {
