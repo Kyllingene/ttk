@@ -29,12 +29,12 @@ pub struct FromIter<I, S>(I, S);
 impl<I: Clone + IntoIterator<Item: fmt::Debug>, S: fmt::Display> fmt::Debug for FromIter<I, S> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let iter = self.0.clone().into_iter();
-        let mut first = false;
+        let mut first = true;
         for item in iter {
             if !first {
                 write!(f, "{}", self.1)?;
             }
-            first = true;
+            first = false;
 
             write!(f, "{item:?}")?;
         }
@@ -46,12 +46,12 @@ impl<I: Clone + IntoIterator<Item: fmt::Debug>, S: fmt::Display> fmt::Debug for 
 impl<I: Clone + IntoIterator<Item: fmt::Display>, S: fmt::Display> fmt::Display for FromIter<I, S> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let iter = self.0.clone().into_iter();
-        let mut first = false;
+        let mut first = true;
         for item in iter {
             if !first {
                 write!(f, "{}", self.1)?;
             }
-            first = true;
+            first = false;
 
             write!(f, "{item}")?;
         }
