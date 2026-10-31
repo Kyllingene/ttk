@@ -4,7 +4,7 @@ use cod::read::KeyCode;
 use cod::{prelude::*, read::KeyModifiers};
 use linoleum::{EditResult, Editor};
 
-pub fn line(level: usize, prompt: impl fmt::Display) -> Query<String, Never> {
+pub fn line(level: u32, prompt: impl fmt::Display) -> Query<String, Never> {
     crate::print::prompt(level, prompt);
     match Editor::new(" > ").read().unwrap_or_else(|e| {
         crate::print::err(level, e);
@@ -17,14 +17,14 @@ pub fn line(level: usize, prompt: impl fmt::Display) -> Query<String, Never> {
     }
 }
 
-pub fn item<T: FromStr>(level: usize, prompt: impl fmt::Display) -> Query<T, T::Err> {
+pub fn item<T: FromStr>(level: u32, prompt: impl fmt::Display) -> Query<T, T::Err> {
     line(level, prompt)
         .map_err(|e| match e {})
         .and_then(|s| T::from_str(&s).into())
 }
 
 pub fn one(
-    level: usize,
+    level: u32,
     prompt: impl fmt::Display,
     choices: &[impl fmt::Display],
     default: impl Into<Option<usize>>,
@@ -143,7 +143,7 @@ pub fn one(
 }
 
 pub fn many(
-    level: usize,
+    level: u32,
     prompt: impl fmt::Display,
     choices: &[impl fmt::Display],
     default: &[usize],

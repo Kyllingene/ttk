@@ -19,7 +19,7 @@ pub struct Header {
 }
 
 impl Header {
-    pub fn print(&self, level: usize, msg: impl fmt::Display) {
+    pub fn print(&self, level: u32, msg: impl fmt::Display) {
         print!(" ");
         color::with::fg(self.color, || {
             (0..level).for_each(|_| print!("{}", self.ch));
@@ -27,7 +27,7 @@ impl Header {
         print!(" {msg}");
     }
 
-    pub fn println(&self, level: usize, msg: impl fmt::Display) {
+    pub fn println(&self, level: u32, msg: impl fmt::Display) {
         print!(" ");
         color::with::fg(self.color, || {
             (0..level).for_each(|_| print!("{}", self.ch));
@@ -35,7 +35,7 @@ impl Header {
         println!(" {msg}");
     }
 
-    pub fn print_full(&self, level: usize, msg: impl fmt::Display) {
+    pub fn print_full(&self, level: u32, msg: impl fmt::Display) {
         print!(" ");
         color::with::fg(self.color, || {
             (0..level).for_each(|_| print!("{}", self.ch));
@@ -43,7 +43,7 @@ impl Header {
         });
     }
 
-    pub fn println_full(&self, level: usize, msg: impl fmt::Display) {
+    pub fn println_full(&self, level: u32, msg: impl fmt::Display) {
         print!(" ");
         color::with::fg(self.color, || {
             (0..level).for_each(|_| print!("{}", self.ch));
@@ -52,23 +52,23 @@ impl Header {
     }
 }
 
-pub fn info(level: usize, msg: impl fmt::Display) {
+pub fn info(level: u32, msg: impl fmt::Display) {
     INFO_HEADER.println(level, msg)
 }
 
-pub fn dbg(level: usize, msg: impl fmt::Display) {
+pub fn dbg(level: u32, msg: impl fmt::Display) {
     DBG_HEADER.println_full(level, msg)
 }
 
-pub fn warn(level: usize, msg: impl fmt::Display) {
+pub fn warn(level: u32, msg: impl fmt::Display) {
     WARN_HEADER.println_full(level, msg)
 }
 
-pub fn err(level: usize, msg: impl fmt::Display) {
+pub fn err(level: u32, msg: impl fmt::Display) {
     ERR_HEADER.println_full(level, msg)
 }
 
-pub fn prompt(level: usize, msg: impl fmt::Display) {
+pub fn prompt(level: u32, msg: impl fmt::Display) {
     PROMPT_HEADER.println_full(level, msg)
 }
 

@@ -1,6 +1,8 @@
 use ttk::prelude::*;
 
 fn main() {
+    let _guard = exit::guard();
+
     print::info(1, "Welcome to the TTK demo!");
     print::ln();
 
@@ -28,23 +30,13 @@ fn main() {
         2,
         "Username: {username}, ID: {id}, Country: {}, Roles: {}",
         countries[country],
-        from_fn::display(|f| {
-            let mut first = true;
-            for role in selected_roles
+        display::from_iter(
+            selected_roles
                 .iter()
-                .zip(roles)
-                .filter_map(|(selected, role)| selected.then_some(role))
-            {
-                if !first {
-                    write!(f, ", ")?;
-                }
-                first = false;
-
-                write!(f, "{role}")?;
-            }
-
-            Ok(())
-        }),
+                .zip(&roles)
+                .filter_map(|(selected, role)| selected.then_some(role)),
+            ", "
+        ),
     );
 
     print::info(1, "Thanks for viewing the demo!");
