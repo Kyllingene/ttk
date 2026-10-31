@@ -1,36 +1,38 @@
-use std::process::{Command, Stdio};
 use std::io::{BufReader, Read, Write};
+use std::process::{Command, Stdio};
 
-pub fn run<A: AsRef<[S]>, S: AsRef<str> + AsRef<std::ffi::OsStr>>(level: u32, cmd: String, args: A) -> bool {
+pub fn run<A: AsRef<[S]>, S: AsRef<str> + AsRef<std::ffi::OsStr>>(
+    level: u32,
+    cmd: String,
+    args: A,
+) -> bool {
     let args = args.as_ref();
 
     if args.is_empty() {
-        crate::info!(
-            level,
-            "Running command `{cmd}`",
-        );
+        crate::info!(level, "Running command `{cmd}`",);
 
-        crate::logfile::write_line(&format!(
-            "=== Running command `{cmd}`",
-        ));
+        crate::logfile::write_line(&format!("=== Running command `{cmd}`",));
     } else {
-        let args_display = crate::display::from_iter(args.iter().map(|arg| crate::display::from_fn(move |f| {
-            let arg: &str = arg.as_ref();
-            if arg.chars().any(|ch| !ch.is_ascii_graphic() || ['\'', '"'].contains(&ch)) {
-                write!(f, "{arg:?}")
-            } else {
-                write!(f, "{arg}")
-            }
-        })), "");
-
-        crate::info!(
-            level,
-            "Running command `{cmd} {args_display}`",
+        let args_display = crate::display::from_iter(
+            args.iter().map(|arg| {
+                crate::display::from_fn(move |f| {
+                    let arg: &str = arg.as_ref();
+                    if arg
+                        .chars()
+                        .any(|ch| !ch.is_ascii_graphic() || ['\'', '"'].contains(&ch))
+                    {
+                        write!(f, "{arg:?}")
+                    } else {
+                        write!(f, "{arg}")
+                    }
+                })
+            }),
+            "",
         );
 
-        crate::logfile::write_line(&format!(
-            "=== Running command `{cmd} {args_display}`",
-        ));
+        crate::info!(level, "Running command `{cmd} {args_display}`",);
+
+        crate::logfile::write_line(&format!("=== Running command `{cmd} {args_display}`",));
     }
 
     let mut command = Command::new(cmd);
@@ -98,7 +100,7 @@ pub fn run<A: AsRef<[S]>, S: AsRef<str> + AsRef<std::ffi::OsStr>>(level: u32, cm
 
         match child.try_wait() {
             Ok(Some(status)) => break status.success(),
-            Ok(None) => {},
+            Ok(None) => {}
             Err(e) => {
                 crate::err!(level, "Failed to finish command: {e}");
                 break false;
@@ -149,36 +151,38 @@ pub fn run<A: AsRef<[S]>, S: AsRef<str> + AsRef<std::ffi::OsStr>>(level: u32, cm
     status
 }
 
-pub fn run_silent<A: AsRef<[S]>, S: AsRef<str> + AsRef<std::ffi::OsStr>>(level: u32, cmd: String, args: A) -> bool {
+pub fn run_silent<A: AsRef<[S]>, S: AsRef<str> + AsRef<std::ffi::OsStr>>(
+    level: u32,
+    cmd: String,
+    args: A,
+) -> bool {
     let args = args.as_ref();
 
     if args.is_empty() {
-        crate::info!(
-            level,
-            "Running command `{cmd}`",
-        );
+        crate::info!(level, "Running command `{cmd}`",);
 
-        crate::logfile::write_line(&format!(
-            "=== Running command `{cmd}`",
-        ));
+        crate::logfile::write_line(&format!("=== Running command `{cmd}`",));
     } else {
-        let args_display = crate::display::from_iter(args.iter().map(|arg| crate::display::from_fn(move |f| {
-            let arg: &str = arg.as_ref();
-            if arg.chars().any(|ch| !ch.is_ascii_graphic() || ['\'', '"'].contains(&ch)) {
-                write!(f, "{arg:?}")
-            } else {
-                write!(f, "{arg}")
-            }
-        })), "");
-
-        crate::info!(
-            level,
-            "Running command `{cmd} {args_display}`",
+        let args_display = crate::display::from_iter(
+            args.iter().map(|arg| {
+                crate::display::from_fn(move |f| {
+                    let arg: &str = arg.as_ref();
+                    if arg
+                        .chars()
+                        .any(|ch| !ch.is_ascii_graphic() || ['\'', '"'].contains(&ch))
+                    {
+                        write!(f, "{arg:?}")
+                    } else {
+                        write!(f, "{arg}")
+                    }
+                })
+            }),
+            "",
         );
 
-        crate::logfile::write_line(&format!(
-            "=== Running command `{cmd} {args_display}`",
-        ));
+        crate::info!(level, "Running command `{cmd} {args_display}`",);
+
+        crate::logfile::write_line(&format!("=== Running command `{cmd} {args_display}`",));
     }
 
     let mut command = Command::new(cmd);

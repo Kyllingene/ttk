@@ -1,6 +1,6 @@
+use std::fs::File;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::fs::File;
 use std::sync::OnceLock;
 
 static LOGFILE: OnceLock<File> = OnceLock::new();

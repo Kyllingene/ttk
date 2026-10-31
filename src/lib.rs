@@ -11,11 +11,11 @@
 pub mod cmd;
 pub mod display;
 pub mod exit;
+pub mod logfile;
 pub mod print;
 pub mod query;
-pub mod logfile;
 
 /// Imports all the sub-modules.
 pub mod prelude {
-    pub use crate::{cmd, display, exit, print, query, logfile};
+    pub use crate::{cmd, display, exit, logfile, print, query};
 }
