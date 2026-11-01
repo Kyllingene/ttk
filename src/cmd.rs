@@ -198,7 +198,7 @@ pub fn run_silent<A: AsRef<[S]>, S: AsRef<str> + AsRef<std::ffi::OsStr>>(
         // either:
         // - this line ran because there is no logfile
         // - this line ran because we failed to clone the logfile's handle
-        // in the former case, this does nothing.
+        // we want this in the latter case. in the former case, this works out to a no-op.
         crate::logfile::write_line("Failed to write command output to logfile");
 
         command.stdout(Stdio::null());
