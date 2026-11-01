@@ -204,6 +204,7 @@ pub fn run_silent<A: AsRef<[S]>, S: AsRef<str> + AsRef<std::ffi::OsStr>>(
         command.stdout(Stdio::null());
         command.stderr(Stdio::null());
     }
+    command.stdin(Stdio::null());
 
     let mut child = match command.spawn() {
         Ok(child) => child,
