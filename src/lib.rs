@@ -15,6 +15,9 @@ pub mod logfile;
 pub mod print;
 pub mod query;
 
+#[cfg(feature = "lua")]
+mod lua;
+
 /// Imports all the sub-modules.
 pub mod prelude {
     pub use crate::{cmd, display, exit, logfile, print, query};
