@@ -23,7 +23,7 @@ pub fn guard() -> cod::guard::Reset {
 #[macro_export]
 macro_rules! abort {
     ($($args:tt)*) => {
-        $crate::exit::exit!(1, $($args)*)
+        $crate::exit::with!(1, $($args)*)
     };
 }
 
