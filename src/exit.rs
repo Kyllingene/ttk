@@ -6,10 +6,10 @@ pub fn ok() -> ! {
 }
 
 pub fn abort(msg: impl fmt::Display) -> ! {
-    err(1, msg)
+    with(1, msg)
 }
 
-pub fn err(code: i32, msg: impl fmt::Display) -> ! {
+pub fn with(code: i32, msg: impl fmt::Display) -> ! {
     crate::print::err(1, msg);
     drop(cod::guard::Reset);
     std::process::exit(code);
@@ -19,3 +19,20 @@ pub fn err(code: i32, msg: impl fmt::Display) -> ! {
 pub fn guard() -> cod::guard::Reset {
     cod::guard::Reset
 }
+
+#[macro_export]
+macro_rules! abort {
+    ($level:expr, $($args:tt)*) => {
+        $crate::exit::exit!($level, 1, $($args)*)
+    };
+}
+
+#[macro_export]
+macro_rules! exit {
+    ($level:expr, $code:expr, $($args:tt)*) => {
+        $crate::exit::err($level, format_args!($($args)*))
+    };
+}
+
+pub use crate::abort;
+pub use crate::exit as with;

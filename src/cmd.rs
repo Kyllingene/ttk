@@ -9,7 +9,7 @@ pub fn run<A: AsRef<[S]>, S: AsRef<str> + AsRef<std::ffi::OsStr>>(
     let args = args.as_ref();
 
     if args.is_empty() {
-        crate::info!(level, "Running command `{cmd}`",);
+        crate::print::info!(level, "Running command `{cmd}`",);
 
         crate::logfile::write_line(&format!("=== Running command `{cmd}`",));
     } else {
@@ -30,7 +30,7 @@ pub fn run<A: AsRef<[S]>, S: AsRef<str> + AsRef<std::ffi::OsStr>>(
             "",
         );
 
-        crate::info!(level, "Running command `{cmd} {args_display}`",);
+        crate::print::info!(level, "Running command `{cmd} {args_display}`",);
 
         crate::logfile::write_line(&format!("=== Running command `{cmd} {args_display}`",));
     }
@@ -43,7 +43,7 @@ pub fn run<A: AsRef<[S]>, S: AsRef<str> + AsRef<std::ffi::OsStr>>(
     let mut child = match command.spawn() {
         Ok(child) => child,
         Err(e) => {
-            crate::err!(level, "Failed to run command: {e}");
+            crate::print::err!(level, "Failed to run command: {e}");
             return false;
         }
     };
@@ -61,40 +61,40 @@ pub fn run<A: AsRef<[S]>, S: AsRef<str> + AsRef<std::ffi::OsStr>>(
         let read = match child_stdout.read(&mut buf) {
             Ok(read) => read,
             Err(e) => {
-                crate::warn!(level, "Failed to read command stdout: {e}");
+                crate::print::warn!(level, "Failed to read command stdout: {e}");
                 0
             }
         };
 
         if read > 0 {
             if let Err(e) = stdout.write_all(&buf[..read]) {
-                crate::err!(level, "Failed to write to stdout: {e}");
+                crate::print::err!(level, "Failed to write to stdout: {e}");
             }
 
             if let Some(logfile) = logfile.as_mut()
                 && let Err(e) = logfile.write_all(&buf[..read])
             {
-                crate::warn!(level, "Failed to write to logfile: {e}");
+                crate::print::warn!(level, "Failed to write to logfile: {e}");
             }
         }
 
         let read = match child_stderr.read(&mut buf) {
             Ok(read) => read,
             Err(e) => {
-                crate::warn!(level, "Failed to read command stderr: {e}");
+                crate::print::warn!(level, "Failed to read command stderr: {e}");
                 0
             }
         };
 
         if read > 0 {
             if let Err(e) = stdout.write_all(&buf[..read]) {
-                crate::err!(level, "Failed to write to stdout: {e}");
+                crate::print::err!(level, "Failed to write to stdout: {e}");
             }
 
             if let Some(logfile) = logfile.as_mut()
                 && let Err(e) = logfile.write_all(&buf[..read])
             {
-                crate::warn!(level, "Failed to write to logfile: {e}");
+                crate::print::warn!(level, "Failed to write to logfile: {e}");
             }
         }
 
@@ -102,7 +102,7 @@ pub fn run<A: AsRef<[S]>, S: AsRef<str> + AsRef<std::ffi::OsStr>>(
             Ok(Some(status)) => break status.success(),
             Ok(None) => {}
             Err(e) => {
-                crate::err!(level, "Failed to finish command: {e}");
+                crate::print::err!(level, "Failed to finish command: {e}");
                 break false;
             }
         }
@@ -111,40 +111,40 @@ pub fn run<A: AsRef<[S]>, S: AsRef<str> + AsRef<std::ffi::OsStr>>(
     let read = match child_stdout.read(&mut buf) {
         Ok(read) => read,
         Err(e) => {
-            crate::warn!(level, "Failed to read command stdout: {e}");
+            crate::print::warn!(level, "Failed to read command stdout: {e}");
             0
         }
     };
 
     if read > 0 {
         if let Err(e) = stdout.write_all(&buf[..read]) {
-            crate::err!(level, "Failed to write to stdout: {e}");
+            crate::print::err!(level, "Failed to write to stdout: {e}");
         }
 
         if let Some(logfile) = logfile.as_mut()
             && let Err(e) = logfile.write_all(&buf[..read])
         {
-            crate::warn!(level, "Failed to write to logfile: {e}");
+            crate::print::warn!(level, "Failed to write to logfile: {e}");
         }
     }
 
     let read = match child_stderr.read(&mut buf) {
         Ok(read) => read,
         Err(e) => {
-            crate::warn!(level, "Failed to read command stderr: {e}");
+            crate::print::warn!(level, "Failed to read command stderr: {e}");
             0
         }
     };
 
     if read > 0 {
         if let Err(e) = stdout.write_all(&buf[..read]) {
-            crate::err!(level, "Failed to write to stdout: {e}");
+            crate::print::err!(level, "Failed to write to stdout: {e}");
         }
 
         if let Some(logfile) = logfile.as_mut()
             && let Err(e) = logfile.write_all(&buf[..read])
         {
-            crate::warn!(level, "Failed to write to logfile: {e}");
+            crate::print::warn!(level, "Failed to write to logfile: {e}");
         }
     }
 
@@ -159,7 +159,7 @@ pub fn run_silent<A: AsRef<[S]>, S: AsRef<str> + AsRef<std::ffi::OsStr>>(
     let args = args.as_ref();
 
     if args.is_empty() {
-        crate::info!(level, "Running command `{cmd}`",);
+        crate::print::info!(level, "Running command `{cmd}`",);
 
         crate::logfile::write_line(&format!("=== Running command `{cmd}`",));
     } else {
@@ -180,7 +180,7 @@ pub fn run_silent<A: AsRef<[S]>, S: AsRef<str> + AsRef<std::ffi::OsStr>>(
             "",
         );
 
-        crate::info!(level, "Running command `{cmd} {args_display}`",);
+        crate::print::info!(level, "Running command `{cmd} {args_display}`",);
 
         crate::logfile::write_line(&format!("=== Running command `{cmd} {args_display}`",));
     }
@@ -209,7 +209,7 @@ pub fn run_silent<A: AsRef<[S]>, S: AsRef<str> + AsRef<std::ffi::OsStr>>(
     let mut child = match command.spawn() {
         Ok(child) => child,
         Err(e) => {
-            crate::err!(level, "Failed to run command: {e}");
+            crate::print::err!(level, "Failed to run command: {e}");
             return false;
         }
     };
@@ -217,7 +217,7 @@ pub fn run_silent<A: AsRef<[S]>, S: AsRef<str> + AsRef<std::ffi::OsStr>>(
     match child.wait() {
         Ok(status) => status.success(),
         Err(e) => {
-            crate::err!(level, "Failed to finish command: {e}");
+            crate::print::err!(level, "Failed to finish command: {e}");
             false
         }
     }
