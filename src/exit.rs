@@ -30,7 +30,7 @@ macro_rules! abort {
 #[macro_export]
 macro_rules! exit {
     ($code:expr, $($args:tt)*) => {
-        $crate::exit::err(format_args!($($args)*))
+        $crate::exit::with(format_args!($($args)*))
     };
 }
 
