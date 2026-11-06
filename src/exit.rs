@@ -22,15 +22,15 @@ pub fn guard() -> cod::guard::Reset {
 
 #[macro_export]
 macro_rules! abort {
-    ($level:expr, $($args:tt)*) => {
-        $crate::exit::exit!($level, 1, $($args)*)
+    ($($args:tt)*) => {
+        $crate::exit::exit!(1, $($args)*)
     };
 }
 
 #[macro_export]
 macro_rules! exit {
-    ($level:expr, $code:expr, $($args:tt)*) => {
-        $crate::exit::err($level, format_args!($($args)*))
+    ($code:expr, $($args:tt)*) => {
+        $crate::exit::err(format_args!($($args)*))
     };
 }
 
